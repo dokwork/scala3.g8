@@ -16,7 +16,7 @@ lazy val compilerOptions = Seq(
   "-Ykind-projector"
 )
 
-lazy val dependencies = new {
+lazy val dependencies = {
   val versions = new {
 		$if(cats_effect.truthy)$
     val catsEffect    = "$cats_effect_version$"
@@ -28,28 +28,21 @@ lazy val dependencies = new {
     val scalatest     = "$scalatest_version$" 
   }
 
-	$if(cats_effect.truthy)$
-  val catsEffect    = "org.typelevel"     %% "cats-effect"                   % versions.catsEffect
-  val stCatsEffect  = "org.typelevel"     %% "cats-effect-testing-scalatest" % versions.stCatsEffect % "test"
-	$endif$
-	$if(fs2.truthy)$
-  val fs2           = "co.fs2"            %% "fs2-core"                      % versions.fs2
-	$endif$
-  val scalatest     = "org.scalatest"     %% "scalatest"                     % versions.scalatest    % "test"
+  Seq(
+    $if(cats_effect.truthy)$
+    "org.typelevel"     %% "cats-effect"                   % versions.catsEffect,
+    "org.typelevel"     %% "cats-effect-testing-scalatest" % versions.stCatsEffect % "test",
+    $endif$
+    $if(fs2.truthy)$
+    "co.fs2"            %% "fs2-core"                      % versions.fs2,
+    $endif$
+    "org.scalatest"     %% "scalatest"                     % versions.scalatest    % "test",
+  )
 }
 
 
 lazy val `$name$` = (project in file("."))
   .settings(
     scalacOptions ++= compilerOptions,
-    libraryDependencies ++= Seq(
-	    $if(cats_effect.truthy)$
-      catsEffect,
-      stCatsEffect,
-      $endif$
-	    $if(fs2.truthy)$
-      fs2,
-      $endif$
-      scalatest, 
-    )
+    libraryDependencies ++= dependencies
 )
