@@ -30,17 +30,26 @@ lazy val dependencies = new {
 
 	$if(cats_effect.truthy)$
   val catsEffect    = "org.typelevel"     %% "cats-effect"                   % versions.catsEffect
-  val stCatsEffect  = "org.typelevel"     %% "cats-effect-testing-scalatest" % versions.stCatsEffect
+  val stCatsEffect  = "org.typelevel"     %% "cats-effect-testing-scalatest" % versions.stCatsEffect % "test"
 	$endif$
 	$if(fs2.truthy)$
   val fs2           = "co.fs2"            %% "fs2-core"                      % versions.fs2
 	$endif$
-  val scalatest     = "org.scalatest"     %% "scalatest"                     % versions.scalatest
+  val scalatest     = "org.scalatest"     %% "scalatest"                     % versions.scalatest    % "test"
 }
 
 
 lazy val `$name$` = (project in file("."))
   .settings(
     scalacOptions ++= compilerOptions,
-    libraryDependencies ++= Seq(catsEffect, fs2) ++ Seq(scalatest, stCatsEffect).map(_ % "test")
+    libraryDependencies ++= Seq(
+	    $if(cats_effect.truthy)$
+      catsEffect,
+      stCatsEffect,
+      $endif$
+	    $if(fs2.truthy)$
+      fs2,
+      $endif$
+      scalatest, 
+    )
 )
